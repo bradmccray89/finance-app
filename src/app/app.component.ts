@@ -1,5 +1,13 @@
-import { Component, signal } from '@angular/core';
+import { Component, effect, signal } from '@angular/core';
 import { DataService } from './data.service';
+
+interface ITransaction {
+  name: string;
+  nickname: string;
+  date: Date;
+  amount: number;
+  category: string;
+}
 
 @Component({
   selector: 'app-root',
@@ -8,22 +16,8 @@ import { DataService } from './data.service';
 })
 export class AppComponent {
   title = 'finance-app';
-  financeData = signal([
-    {
-      name: 'Rent',
-      nickname: '',
-      amount: 2000,
-      category: 'Bills',
-      date: new Date('2021-01-01'),
-    },
-    {
-      name: 'Electricity',
-      nickname: '',
-      amount: 100,
-      category: 'Bills',
-      date: new Date('2021-01-01'),
-    },
-  ]);
+  financeData = signal<ITransaction[] | null>(null);
+  file: any = null;
 
   constructor(private dataService: DataService) {
     //this.getFinanceData();
@@ -35,19 +29,21 @@ export class AppComponent {
   }
 
   uploadFile(event: any) {
-    const file = event.target.files[0];
-    if (file && file.type !== 'text/csv') {
+    console.log(event.target.files[0]);
+    this.file = event.target.files[0];
+    if (this.file && this.file.type !== 'text/csv') {
       return;
     }
     let fileReader = new FileReader();
     fileReader.onload = (e) => {
       this.parseFinanceData(fileReader.result);
     };
-    fileReader.readAsText(file);
+    fileReader.readAsText(this.file);
   }
 
   parseFinanceData(data: any) {
     let transactionList: [] = data.split('\n');
+    const updatedList: ITransaction[] = [];
     transactionList.forEach((transaction: any, index: number) => {
       if (!transaction) return;
       // split and remove quotes
@@ -56,14 +52,22 @@ export class AppComponent {
       });
       let transactionObject = {
         date: new Date(transactionData[0]),
-        amount: Number(transactionData[1]),
+        amount: +transactionData[1],
         name: String(transactionData[4]),
         nickname: '',
         category: '',
       };
-      this.financeData.mutate((value) => {
-        value[index] = transactionObject;
-      });
+      updatedList.push(transactionObject);
     });
+    this.financeData.set(updatedList);
+  }
+
+  clearFinanceData() {
+    this.financeData.set(null);
+    this.file = null;
+    // clear file input
+    let fileInput = document.getElementById('fileInput') as HTMLInputElement;
+    fileInput.value = '';
+    console.log('Clear Finance Data', fileInput);
   }
 }
