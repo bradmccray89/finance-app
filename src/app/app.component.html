@@ -1,5 +1,5 @@
 <div
-  class="flex flex-col items-center justify-start w-screen h-screen gap-2 p-4 overflow-hidden text-white bg-gray-700"
+  class="flex flex-col items-center justify-start w-screen h-screen gap-2 p-4 overflow-hidden text-white bg-black/90"
 >
   <div>Finance Window</div>
   <input
@@ -9,14 +9,35 @@
     [accept]="'text/csv'"
     (change)="uploadFile($event)"
   />
-  <button mat-raised-button color="primary" (click)="fileUpload.click()">
-    Upload File
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="fileUpload.click()"
+    class="flex-shrink-0"
+  >
+    Upload CSV File
   </button>
-  <div class="overflow-y-auto">
-    <ul>
-      <li *ngFor="let item of financeData()">
-        {{ item.name }} - {{ item.amount }}
+  <div class="overflow-y-auto w-full flex justify-center items-start p-2">
+    <ul class="w-full">
+      <li
+        *ngFor="let item of financeData(); let i = index"
+        class="my-1 p-3 md:hover:bg-white/10 cursor-pointer rounded-lg"
+      >
+        <div class="flex justify-between gap-x-2">
+          <div>{{ item.name }}</div>
+          <div [ngClass]="item.amount < 0 ? 'text-red-400' : 'text-green-400'">
+            {{ item.amount | currency : "USD" }}
+          </div>
+        </div>
       </li>
     </ul>
+    <!-- <mat-list class="w-full">
+      <mat-list-item *ngFor="let item of financeData()">
+        <div matListItemTitle>{{ item.name }}</div>
+        <div matListItemLine [ngClass]="item.amount < 0 ? 'text-red-500' : ''">
+          {{ item.amount | currency : "USD" }}
+        </div>
+      </mat-list-item>
+    </mat-list> -->
   </div>
 </div>

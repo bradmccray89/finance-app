@@ -16,6 +16,13 @@ export class AppComponent {
       category: 'Bills',
       date: new Date('2021-01-01'),
     },
+    {
+      name: 'Electricity',
+      nickname: '',
+      amount: 100,
+      category: 'Bills',
+      date: new Date('2021-01-01'),
+    },
   ]);
 
   constructor(private dataService: DataService) {
@@ -28,7 +35,6 @@ export class AppComponent {
   }
 
   uploadFile(event: any) {
-    console.log(event.target.files[0]);
     const file = event.target.files[0];
     if (file && file.type !== 'text/csv') {
       return;
@@ -37,12 +43,13 @@ export class AppComponent {
     fileReader.onload = (e) => {
       this.parseFinanceData(fileReader.result);
     };
+    fileReader.readAsText(file);
   }
 
   parseFinanceData(data: any) {
-    let transactionList = data.split('\n');
-    console.log(transactionList[0]);
+    let transactionList: [] = data.split('\n');
     transactionList.forEach((transaction: any, index: number) => {
+      if (!transaction) return;
       // split and remove quotes
       let transactionData = transaction.split(',').map((item: any) => {
         return item.replace(/['"]+/g, '');
@@ -54,7 +61,6 @@ export class AppComponent {
         nickname: '',
         category: '',
       };
-      console.log(transactionObject);
       this.financeData.mutate((value) => {
         value[index] = transactionObject;
       });
