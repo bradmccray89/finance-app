@@ -18,6 +18,9 @@ export class AppComponent {
   title = 'finance-app';
   financeData = signal<ITransaction[] | null>(null);
   file: any = null;
+  playingGame = false;
+  categories = ['Uncategorized'];
+  selectedIndex: number | null = null;
 
   constructor(private dataService: DataService) {
     //this.getFinanceData();
@@ -54,12 +57,13 @@ export class AppComponent {
         date: new Date(transactionData[0]),
         amount: +transactionData[1],
         name: String(transactionData[4]),
-        nickname: '',
-        category: '',
+        nickname: String(transactionData[5] || ''),
+        category: String(transactionData[6] || ''),
       };
       updatedList.push(transactionObject);
     });
     this.financeData.set(updatedList);
+    console.log('Finance Data', this.financeData()?.at(0));
   }
 
   clearFinanceData() {
@@ -69,5 +73,14 @@ export class AppComponent {
     let fileInput = document.getElementById('fileInput') as HTMLInputElement;
     fileInput.value = '';
     console.log('Clear Finance Data', fileInput);
+  }
+
+  updateItem(item: ITransaction, index: number) {
+    console.log('Update Item', item, index);
+    console.log(this.financeData()?.at(index));
+  }
+
+  startGame() {
+    console.log('Start Game');
   }
 }
