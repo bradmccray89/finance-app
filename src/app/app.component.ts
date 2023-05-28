@@ -1,5 +1,6 @@
-import { Component, effect, signal } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { DataService } from './data.service';
+import { expand, fadeInOut } from './animations';
 
 interface ITransaction {
   name: string;
@@ -13,6 +14,7 @@ interface ITransaction {
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
+  animations: [expand, fadeInOut],
 })
 export class AppComponent {
   title = 'finance-app';
@@ -21,6 +23,7 @@ export class AppComponent {
   playingGame = false;
   categories = ['Uncategorized'];
   selectedIndex: number | null = null;
+  showText = false;
 
   constructor(private dataService: DataService) {
     //this.getFinanceData();
